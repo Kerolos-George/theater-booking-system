@@ -33,6 +33,7 @@ const BookingForm = () => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   
   const bookingTypes = [
     { value: 'rehearsals', label: 'Rehearsals', pricePerHour: 50 },
@@ -247,7 +248,7 @@ const BookingForm = () => {
       }
 
       await response.json();
-      alert('Booking submitted successfully!');
+      setShowSuccessDialog(true);
       // Reset form
       setFormData({
         name: '',
@@ -261,7 +262,6 @@ const BookingForm = () => {
         image: null
       });
       setImagePreview(null);
-      navigate('/');
     } catch (err: any) {
       setError(err.message || 'An error occurred while submitting your booking');
       console.error('Booking error:', err);
@@ -516,6 +516,38 @@ const BookingForm = () => {
           </button>
         </form>
       </div>
+
+      {/* Success Dialog */}
+      {showSuccessDialog && (
+        <div 
+          className="dialog-overlay"
+          onClick={() => {
+            setShowSuccessDialog(false);
+            navigate('/');
+          }}
+        >
+          <div 
+            className="dialog-content"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="dialog-icon">✓</div>
+            <h2 className="dialog-title">Booking Submitted Successfully!</h2>
+            <p className="dialog-message">
+              Your booking request has been received. Please check your email for confirmation.
+              We will send you a confirmation email shortly.
+            </p>
+            <button
+              className="dialog-button"
+              onClick={() => {
+                setShowSuccessDialog(false);
+                navigate('/');
+              }}
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
