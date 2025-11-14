@@ -1,0 +1,52 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  phone     String
+  bookings  Booking[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([email])
+}
+
+model Booking {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Booking details with localization
+  typeAr     String
+  typeEn     String
+  price      Decimal  @db.Decimal(10, 2)
+  reasonAr   String?  // Optional reason in Arabic
+  reasonEn   String?  // Optional reason in English
+  
+  // Date and time (unique combination)
+  date       DateTime @db.Date
+  time       String   // Time as string (e.g., "10:00 AM")
+  
+  // Receipt URL from Supabase storage
+  receiptUrl String?
+  
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Unique constraint on date + time combination
+  @@unique([date, time])
+  @@index([date])
+  @@index([userId])
+}
+
