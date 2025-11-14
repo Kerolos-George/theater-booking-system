@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Upload, Calendar, Clock, Loader } from 'lucide-react';
 
 interface BookingData {
@@ -159,7 +159,7 @@ const BookingForm = () => {
       setCheckingAvailability(true);
       fetch(`${API_BASE_URL}/bookings/available-times?date=${formData.date}&type=${formData.bookingType}`)
         .then(res => res.json())
-        .then(data => {
+        .then(() => {
           // Handle response - might need to filter available slots
           setCheckingAvailability(false);
         })
@@ -176,7 +176,7 @@ const BookingForm = () => {
     
     if (formData.bookingType === 'rehearsals') {
       // Calculate price based on hours selected
-      if (formData.timeFrom && formData.timeTo) {
+      if (formData.timeFrom && formData.timeTo && selectedType.pricePerHour) {
         const fromIndex = generateRehearsalTimeSlots().indexOf(formData.timeFrom);
         const toIndex = generateRehearsalTimeSlots().indexOf(formData.timeTo);
         if (fromIndex !== -1 && toIndex !== -1 && toIndex > fromIndex) {
@@ -187,7 +187,7 @@ const BookingForm = () => {
       return 0;
     } else if (formData.bookingType === 'events') {
       // Events are 300 EGP per 4-hour block
-      if (formData.timeFrom && formData.timeTo) {
+      if (formData.timeFrom && formData.timeTo && 'pricePer3Hours' in selectedType) {
         return selectedType.pricePer3Hours; // Price is 300 EGP per block
       }
       return 0;
@@ -212,7 +212,7 @@ const BookingForm = () => {
       }
 
       const calculatedPrice = getSelectedPrice();
-      if (calculatedPrice === 0) {
+      if (calculatedPrice === 0 || calculatedPrice === undefined) {
         throw new Error('Please select valid time slots');
       }
 
@@ -246,7 +246,7 @@ const BookingForm = () => {
         throw new Error(errorData.message || 'Failed to create booking');
       }
 
-      const booking = await response.json();
+      await response.json();
       alert('Booking submitted successfully!');
       // Reset form
       setFormData({
