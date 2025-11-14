@@ -21,7 +21,7 @@ body {
 .landing-page {
   min-height: 100vh;
   background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
-              url('../gettyimages-467666766-2048x2048.jpg');
+              url('/gettyimages-467666766-2048x2048.jpg');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
